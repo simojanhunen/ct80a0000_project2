@@ -17,18 +17,25 @@ def createPostgreSQL():
     cursor.execute("DROP DATABASE IF EXISTS user_db")
     cursor.execute("DROP DATABASE IF EXISTS metadata_db")
     cursor.execute("DROP DATABASE IF EXISTS advertisement_db")
+    print("Deleted pre-existing databases with similar names")
 
     # CREATE DBs
     cursor.execute("CREATE DATABASE movie_db")
+    print("Created movie_db")
     cursor.execute("CREATE DATABASE series_db")
+    print("Created series_db")
     cursor.execute("CREATE DATABASE user_db")
+    print("Created user_db")
     cursor.execute("CREATE DATABASE metadata_db")
+    print("Created metadata_db")
     cursor.execute("CREATE DATABASE advertisement_db")
+    print("Created advertisement_db")
 
     # CLOSE CONNECTION
     cursor.close()
     connection.close()
-
+    print("\nPostgreSQL databases created successfully")
+    print("Creating tables and populating databases...\n")
 # CREATE AND POPULATE movie_db
     # OPEN CONNECTION TO DESIRED DATABASE
     connection = psycopg2.connect(
@@ -62,20 +69,20 @@ def createPostgreSQL():
             movie_id INTEGER REFERENCES movies(movie_id),
 		    region_EMEA VARCHAR(255)
         )""")
-
+    
     cursor.execute("""
         CREATE TABLE ASIA_content (
             movie_id INTEGER REFERENCES movies(movie_id),
 		    region_ASIA VARCHAR(255)
         )""")
-
+    
     cursor.execute("""
         CREATE TABLE reviews (
             movie_id INTEGER REFERENCES movies(movie_id),
 		    rating DECIMAL(10,2),
 		    comments TEXT
         )""")
-
+    
     cursor.execute("""
         CREATE TABLE casting (
             movie_id INTEGER REFERENCES movies(movie_id),
@@ -83,7 +90,10 @@ def createPostgreSQL():
             actors TEXT,
             director TEXT
         )""")
-
+    
+    print("#############################################")
+    print("Created tables in movie_db")
+    
     # INSERT DATA INTO TABLES
     cursor.execute("""
         INSERT INTO movies (movie_id, title, runtime, description, release_date) VALUES
@@ -108,7 +118,7 @@ def createPostgreSQL():
             (19, 'Nineteen', 300, 'Youth drama', '2021-01-19'),
             (20, 'The final movie', 310, 'Last movie ever', '2021-01-20')
     """)
-
+    
     cursor.execute("""
         INSERT INTO AMERICAS_content (movie_id, region_AMERICAS) VALUES
             (1, 'United States'),
@@ -228,6 +238,8 @@ def createPostgreSQL():
             (19, 'Thriller', 'Ethan Roberts, Ella Turner', 'J.J. Abrams'),
             (20, 'Drama', 'Nicholas Phillips, Victoria Campbell', 'Christopher Nolan')
     """)
+    print("Populated tables in movie_db")
+    print("#############################################")
 
     # CLOSE CONNECTION
     cursor.close()
@@ -288,6 +300,7 @@ def createPostgreSQL():
             actors TEXT,
             director TEXT
         )""")
+    print("Created tables in series_db")
 
     # INSERT DATA INTO TABLES
 
@@ -434,6 +447,8 @@ def createPostgreSQL():
         (19, 'Drama', 'Ethan Roberts, Ella Turner', 'Aiden Ross'),
         (20, 'Action', 'Nicholas Phillips, Victoria Campbell', 'Natalie Simmons')
     """)
+    print("Populated tables in series_db")
+    print("#############################################")
 
     # CLOSE CONNECTION
     cursor.close()
@@ -491,6 +506,7 @@ def createPostgreSQL():
             main_genre VARCHAR(255),
             secondary_genre VARCHAR(255)
         )""")
+    print("Created tables in user_db")
 
     # INSERT DATA INTO TABLES
 
@@ -638,20 +654,361 @@ def createPostgreSQL():
             (19, 'Action', 'Horror'),
             (20, 'Action', 'Horror')
         """)
+    print("Populated tables in user_db")
+    print("#############################################")
 
     # CLOSE CONNECTION
     cursor.close()
     connection.close()
 
 # CREATE AND POPULATE metadata_db
+    # OPEN CONNECTION TO DESIRED DATABASE
+    connection = psycopg2.connect(
+        host="localhost",
+        database="metadata_db",
+        user="postgres",
+        password="admin"
+    )
+    connection.autocommit = True
+    cursor = connection.cursor()
 
+    # CREATE TABLES
+
+    cursor.execute("""
+        CREATE TABLE purchases (
+            user_id INTEGER,
+            purchase_date DATE ARRAY
+        )""")
+
+    cursor.execute("""
+        CREATE TABLE movie_history (
+            user_id INTEGER,
+            movie_id INTEGER ARRAY
+        )""")
+
+    cursor.execute("""
+        CREATE TABLE series_history (
+            user_id INTEGER,
+            series_id INTEGER ARRAY
+        )""")
+
+    cursor.execute("""
+        CREATE TABLE search_history (
+            user_id INTEGER,
+            search_query TEXT ARRAY
+        )""")
+
+    cursor.execute("""
+        CREATE TABLE user_meta (
+            user_id INTEGER,
+            created DATE,
+            watchtime INTEGER,
+            subcribed_for INTEGER,
+            last_login DATE
+        )""")
+    print("Created tables in metadata_db")
+
+    # INSERT DATA INTO TABLES
+
+    cursor.execute("""
+        INSERT INTO purchases (user_id, purchase_date) VALUES
+            (1, '{"2021-01-01"}'),
+            (2, '{"2021-01-02"}'),
+            (3, '{"2021-01-03","2021-01-04"}'),
+            (4, '{"2021-01-05"}'),
+            (5, '{"2021-01-06"}'),
+            (6, '{"2021-01-07"}'),
+            (7, '{"2021-01-08", "2021-01-02"}'),
+            (8, '{"2021-01-09"}'),
+            (9, '{"2021-01-10"}'),
+            (10, '{"2021-01-11"}'),
+            (11, '{"2021-01-12","2021-01-02"}'),
+            (12, '{"2021-01-13"}'),
+            (13, '{"2021-01-14"}'),
+            (14, '{"2021-01-15"}'),
+            (15, '{"2021-01-16"}'),
+            (16, '{"2021-01-17"}'),
+            (17, '{"2021-01-18","2021-01-02","2021-01-02"}'),
+            (18, '{"2021-01-19"}'),
+            (19, '{"2021-01-20"}'),
+            (20, '{"2021-01-21","2021-01-02"}')
+        """)
+    
+    cursor.execute("""
+        INSERT INTO movie_history (user_id, movie_id) VALUES
+            (1, '{1}'),
+            (2, '{2}'),
+            (3, '{3, 4}'),
+            (4, '{5}'),
+            (5, '{6}'),
+            (6, '{7}'),
+            (7, '{8, 2}'),
+            (8, '{9}'),
+            (9, '{10}'),
+            (10, '{11}'),
+            (11, '{12, 2}'),
+            (12, '{13}'),
+            (13, '{14}'),
+            (14, '{15}'),
+            (15, '{16}'),
+            (16, '{17}'),
+            (17, '{18, 2, 2}'),
+            (18, '{19}'),
+            (19, '{20}'),
+            (20, '{21, 2}')
+        """)
+
+    cursor.execute("""
+        INSERT INTO series_history (user_id, series_id) VALUES
+            (1, '{1}'),
+            (2, '{2, 3}'),
+            (3, '{3, 4}'),
+            (4, '{5, 2}'),
+            (5, '{6}'),
+            (6, '{7}'),
+            (7, '{8, 2}'),
+            (8, '{6}'),
+            (9, '{10}'),
+            (10, '{11}'),
+            (11, '{12, 5}'),
+            (12, '{13}'),
+            (13, '{14}'),
+            (14, '{1}'),
+            (15, '{16}'),
+            (16, '{17}'),
+            (17, '{1, 2, 3}'),
+            (18, '{19}'),
+            (19, '{20}'),
+            (20, '{21, 2}')
+        """)
+
+    cursor.execute("""
+        INSERT INTO search_history (user_id, search_query) VALUES
+            (1, '{"action movie", "cartoon series"}'),
+            (2, '{"documentary movie", "horror series"}'),
+            (3, '{"drama movie", "action series"}'),
+            (4, '{"documentary movie", "thriller series"}'),
+            (5, '{"drama movie", "thriller series"}'),
+            (6, '{"action movie", "drama series"}'),
+            (7, '{"action movie", "documentary series"}'),
+            (8, '{"drama movie", "thriller series"}'),
+            (9, '{"horror movie", "thriller series"}'),
+            (10, '{"thriller movie", "action series"}'),
+            (11, '{"horror movie", "drama series"}'),
+            (12, '{"thriller movie", "cartoon series"}'),
+            (13, '{"horror movie", "action series"}'),
+            (14, '{"drama movie", "thriller series"}'),
+            (15, '{"action movie", "drama series"}'),
+            (16, '{"drama movie", "cartoon series"}'),
+            (17, '{"action movie", "documentary series"}'),
+            (18, '{"cartoon movie", "documentary series"}'),
+            (19, '{"action movie", "horror series"}'),
+            (20, '{"action movie", "horror series"}')
+        """)
+
+    cursor.execute("""
+        INSERT INTO user_meta (user_id, created, watchtime, subcribed_for, last_login) VALUES
+            (1, '2021-01-01', 120, 1, '2021-01-01'),
+            (2, '2021-01-02', 130, 2, '2021-01-02'),
+            (3, '2021-01-03', 140, 3, '2021-01-03'),
+            (4, '2021-01-04', 150, 4, '2021-01-04'),
+            (5, '2021-01-05', 160, 5, '2021-01-05'),
+            (6, '2021-01-06', 170, 6, '2021-01-06'),
+            (7, '2021-01-07', 180, 7, '2021-01-07'),
+            (8, '2021-01-08', 190, 8, '2021-01-08'),
+            (9, '2021-01-09', 200, 9, '2021-01-09'),
+            (10, '2021-01-10', 210, 10, '2021-01-10'),
+            (11, '2021-01-11', 220, 11, '2021-01-11'),
+            (12, '2021-01-12', 230, 12, '2021-01-12'),
+            (13, '2021-01-13', 240, 13, '2021-01-13'),
+            (14, '2021-01-14', 250, 14, '2021-01-14'),
+            (15, '2021-01-15', 260, 15, '2021-01-15'),
+            (16, '2021-01-16', 270, 16, '2021-01-16'),
+            (17, '2021-01-17', 280, 17, '2021-01-17'),
+            (18, '2021-01-18', 290, 18, '2021-01-18'),
+            (19, '2021-01-19', 300, 19, '2021-01-19'),
+            (20, '2021-01-20', 310, 20, '2021-01-20')
+        """)
+    print("Populated tables in metadata_db")
+    print("#############################################")
+
+
+    # CLOSE CONNECTION
+    cursor.close()
+    connection.close()
 
 # CREATE AND POPULATE advertisement_db
+    # OPEN CONNECTION TO DESIRED DATABASE
+    connection = psycopg2.connect(
+        host="localhost",
+        database="advertisement_db",
+        user="postgres",
+        password="admin"
+    )
+    connection.autocommit = True
+    cursor = connection.cursor()
 
+    # CREATE TABLES
+    cursor.execute("""
+        CREATE TABLE ads (
+            ad_id INTEGER PRIMARY KEY,
+            title VARCHAR(255),
+            runtime INTEGER,
+            advertiser VARCHAR(255)
+        )""")
+
+    cursor.execute("""
+        CREATE TABLE AMERICAS_ads (
+            ad_id INTEGER REFERENCES ads(ad_id),
+            region_AMERICAS VARCHAR(255)
+        )""")
+
+    cursor.execute("""
+        CREATE TABLE EMEA_ads (
+            ad_id INTEGER REFERENCES ads(ad_id),
+            region_EMEA VARCHAR(255)
+        )""")
+
+    cursor.execute("""
+        CREATE TABLE ASIA_ads (
+            ad_id INTEGER REFERENCES ads(ad_id),
+            region_ASIA VARCHAR(255)
+        )""")
+
+    cursor.execute("""
+        CREATE TABLE ad_target (
+            ad_id INTEGER REFERENCES ads(ad_id),
+            target_age INTEGER,
+            target_group VARCHAR(255)
+        )""")
+    print("Created tables in advertisement_db")
+
+    # INSERT DATA INTO TABLES
+
+    cursor.execute("""
+        INSERT INTO ads (ad_id, title, runtime, advertiser) VALUES
+            (1, 'Summer Sale', 120, 'Company AB'),
+            (2, 'New Arrival', 130, 'Valio OY'),
+            (3, 'Limited Offer', 140, 'Pirkka'),
+            (4, 'Flash Deal', 150, 'Pirkka'),
+            (5, 'Holiday Special', 160, 'Kesko'),
+            (6, 'Mega Discount', 170, 'Walmart'),
+            (7, 'Exclusive Deal', 180, 'Amazon'),
+            (8, 'Winter Clearance', 190, 'Amazon'),
+            (9, 'Buy One Free', 200, 'Ebay'),
+            (10, 'Weekend Sale', 210, 'Paypal'),
+            (11, 'Hot Deals', 220, 'BMW'),
+            (12, 'Best Price', 230, 'Volvo'),
+            (13, 'Super Savings', 240, 'Steakhouse'),
+            (14, 'Clearance Sale', 250, 'Fishmarket'),
+            (15, 'Daily Deals', 260, 'Youtube'),
+            (16, 'Seasonal Offer', 270, 'Python'),
+            (17, 'Big Savings', 280, 'Amazon'),
+            (18, 'Special Discount', 290, 'FirstFirst'),
+            (19, 'Limited Time', 300, 'Megacorp'),
+            (20, 'Grand Opening', 310, 'Amazon')
+        """)
+
+    cursor.execute("""
+        INSERT INTO AMERICAS_ads (ad_id, region_AMERICAS) VALUES
+            (1, 'United States'),
+            (2, 'United States'),
+            (3, 'United States'),
+            (4, 'Canada'),
+            (5, 'Brazil'),
+            (6, 'United States'),
+            (7, 'Brazil'),
+            (8, 'Colombia'),
+            (9, 'Argentina'),
+            (10, 'Canada'),
+            (11, 'United States'),
+            (12, 'El Salvador'),
+            (13, 'United States'),
+            (14, 'Canada'),
+            (15, 'United States'),
+            (16, 'Brazil'),
+            (17, 'Brazil'),
+            (18, 'Argentina'),
+            (19, 'Brazil'),
+            (20, 'United States')
+        """)
+
+    cursor.execute("""
+        INSERT INTO EMEA_ads (ad_id, region_EMEA) VALUES
+            (1, 'Germany'),
+            (2, 'Italy'),
+            (3, 'Spain'),
+            (4, 'Netherlands'),
+            (5, 'Belgium'),
+            (6, 'Switzerland'),
+            (7, 'Austria'),
+            (8, 'Norway'),
+            (9, 'Denmark'),
+            (10, 'Poland'),
+            (11, 'Portugal'),
+            (12, 'Greece'),
+            (13, 'Turkey'),
+            (14, 'South Africa'),
+            (15, 'Egypt')
+        """)
+
+    cursor.execute("""
+        INSERT INTO ASIA_ads (ad_id, region_ASIA) VALUES
+            (1, 'China'),
+            (2, 'India'),
+            (3, 'Japan'),
+            (4, 'South Korea'),
+            (5, 'Indonesia'),
+            (6, 'Malaysia'),
+            (7, 'Thailand'),
+            (8, 'Vietnam'),
+            (9, 'Philippines'),
+            (10, 'Singapore'),
+            (11, 'Pakistan'),
+            (12, 'Bangladesh'),
+            (13, 'Sri Lanka'),
+            (14, 'Nepal'),
+            (15, 'Myanmar'),
+            (16, 'Colombia'),
+            (17, 'Laos'),
+            (18, 'Mongolia'),
+            (19, 'Kazakhstan'),
+            (20, 'Uzbekistan')
+        """)
+
+    cursor.execute("""
+        INSERT INTO ad_target (ad_id, target_age, target_group) VALUES
+            (1, 18, 'Students'),
+            (2, 19, 'Young Adults'),
+            (3, 20, 'Adults'),
+            (4, 21, 'Seniors'),
+            (5, 22, 'Students'),
+            (6, 23, 'Young Adults'),
+            (7, 24, 'Adults'),
+            (8, 25, 'Seniors'),
+            (9, 26, 'Students'),
+            (10, 27, 'Young Adults'),
+            (11, 28, 'Adults'),
+            (12, 29, 'Seniors'),
+            (13, 30, 'Students'),
+            (14, 31, 'Young Adults'),
+            (15, 32, 'Adults'),
+            (16, 33, 'Seniors'),
+            (17, 34, 'Students'),
+            (18, 35, 'Young Adults'),
+            (19, 36, 'Adults'),
+            (20, 37, 'Seniors')
+        """)
+    print("Populated tables in advertisement_db")
+    print("#############################################")
+
+    # CLOSE CONNECTION
+    cursor.close()
+    connection.close()
 
 
 def dbInit():
     createPostgreSQL()
-    print("Databases created successfully")
+    print("\nDatabase initialization complete, exiting...")
 
 dbInit()
