@@ -73,6 +73,17 @@ class DatabaseHandler:
         for entry in self.movie_cur.fetchall():
             print(entry)
 
+    def update_movie(self, movie_id, title, runtime, description, release_date):
+        self.movie_cur.execute(
+            f"""
+            UPDATE movies
+            SET title = '{title}', runtime = '{runtime}', description = '{description}', release_date = '{release_date}'
+            WHERE movie_id = '{movie_id}';
+            """
+        )
+        self.movie_db_conn.commit()
+        print("Entry updated")
+        
     def quit(self):
         print("Closing connections to databases...")
         self.movie_db_conn.close()
@@ -89,7 +100,7 @@ class DatabaseHandler:
 
 def main_menu():
     print("\n1) Show movie selection available in a specific country")
-    # print("2) placeholder")
+    print("2) Update movie information")
     # print("3) placeholder")
     # print("4) placeholder")
     # print("5) placeholder")
@@ -110,6 +121,13 @@ def main():
             case "1":
                 country = input("Which country? (e.g., Brazil): ")
                 database_handler.find_all_movies_in_country(country.capitalize())
+            case "2":
+                movie_id = input("Enter the id of the movie to be updated: ")
+                title = input("Enter a new title for the movie: ")
+                runtime = input("Enter a new runtime for the movie: ")
+                description = input("Enter a new description for the movie: ")
+                release_date = input("Enter a new release date for the movie: ")
+                database_handler.update_movie(movie_id, title, runtime, description, release_date)
 
             case _:
                 print("Erronous input, try again!")
