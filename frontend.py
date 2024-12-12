@@ -83,7 +83,39 @@ class DatabaseHandler:
         )
         self.movie_db_conn.commit()
         print("Entry updated")
+
+    def find_movie_reviews(self, movie_id):
+        self.movie_cur.execute(
+            f"""
+            SELECT *
+            FROM reviews
+            WHERE movie_id = '{movie_id}';
+            """
+        )
+        for entry in self.movie_cur.fetchall():
+            print(entry)
+
+    def insert_movie_review(self, movie_id, rating, comment):
+        self.movie_cur.execute(
+            f"""
+            INSERT INTO reviews (movie_id, rating, comments)
+            VALUES ('{movie_id}', '{rating}', '{comment}');
+            """
+        )
+        self.movie_db_conn.commit()
+        print("Movie review inserted")
+    
+    def delete_movie_reviews(self, movie_id):
+        self.movie_cur.execute(
+            f"""
+            DELETE FROM reviews
+            WHERE movie_id = '{movie_id}';
+            """
+        )
+        self.movie_db_conn.commit()
+        print("Movie reviews deleted")
         
+
     def quit(self):
         print("Closing connections to databases...")
         self.movie_db_conn.close()
@@ -101,9 +133,9 @@ class DatabaseHandler:
 def main_menu():
     print("\n1) Show movie selection available in a specific country")
     print("2) Update movie information")
-    # print("3) placeholder")
-    # print("4) placeholder")
-    # print("5) placeholder")
+    print("3) Show movie reviews")
+    print("4) Insert movie review")
+    print("5) Delete movie reviews")
     # print("6) placeholder")
     print("0) Exit the application")
 
@@ -128,7 +160,20 @@ def main():
                 description = input("Enter a new description for the movie: ")
                 release_date = input("Enter a new release date for the movie: ")
                 database_handler.update_movie(movie_id, title, runtime, description, release_date)
-
+            case "3":
+                movie_id = input("Enter the id of the movie: ")
+                database_handler.find_movie_reviews(movie_id)
+            case "4":
+                movie_id = input("Enter the id of the movie: ")
+                rating = input("Enter the rating (1-10): ")
+                if rating not in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]:
+                    print("Invalid rating, rating must be between 1 and 10.")
+                    continue
+                comment = input("Enter a comment: ")
+                database_handler.insert_movie_review(movie_id, rating, comment)
+            case "5":
+                movie_id = input("Enter the id of the movie: ")
+                database_handler.delete_movie_reviews(movie_id)
             case _:
                 print("Erronous input, try again!")
 
