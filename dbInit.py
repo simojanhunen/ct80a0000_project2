@@ -69,20 +69,20 @@ def createPostgreSQL():
             movie_id INTEGER REFERENCES movies(movie_id),
 		    region_EMEA VARCHAR(255)
         )""")
-    
+
     cursor.execute("""
         CREATE TABLE ASIA_content (
             movie_id INTEGER REFERENCES movies(movie_id),
 		    region_ASIA VARCHAR(255)
         )""")
-    
+
     cursor.execute("""
         CREATE TABLE reviews (
             movie_id INTEGER REFERENCES movies(movie_id),
 		    rating DECIMAL(10,2),
 		    comments TEXT
         )""")
-    
+
     cursor.execute("""
         CREATE TABLE casting (
             movie_id INTEGER REFERENCES movies(movie_id),
@@ -90,10 +90,10 @@ def createPostgreSQL():
             actors TEXT,
             director TEXT
         )""")
-    
+
     print("#############################################")
     print("Created tables in movie_db")
-    
+
     # INSERT DATA INTO TABLES
     cursor.execute("""
         INSERT INTO movies (movie_id, title, runtime, description, release_date) VALUES
@@ -118,7 +118,7 @@ def createPostgreSQL():
             (19, 'Nineteen', 300, 'Youth drama', '2021-01-19'),
             (20, 'The final movie', 310, 'Last movie ever', '2021-01-20')
     """)
-    
+
     cursor.execute("""
         INSERT INTO AMERICAS_content (movie_id, region_AMERICAS) VALUES
             (1, 'United States'),
@@ -126,11 +126,13 @@ def createPostgreSQL():
             (3, 'United States'),
             (4, 'Canada'),
             (5, 'Brazil'),
+            (5, 'United States'),
             (6, 'United States'),
             (7, 'Brazil'),
             (8, 'Colombia'),
             (9, 'Argentina'),
             (10, 'Canada'),
+            (10, 'United States'),
             (11, 'United States'),
             (12, 'El Salvador'),
             (13, 'United States'),
@@ -273,7 +275,7 @@ def createPostgreSQL():
             series_id INTEGER REFERENCES series(series_id),
             region_AMERICAS VARCHAR(255)
         )""")
-    
+
     cursor.execute("""
         CREATE TABLE EMEA_content (
             series_id INTEGER REFERENCES series(series_id),
@@ -285,14 +287,14 @@ def createPostgreSQL():
             series_id INTEGER REFERENCES series(series_id),
             region_ASIA VARCHAR(255)
         )""")
-    
+
     cursor.execute("""
         CREATE TABLE reviews (
             series_id INTEGER REFERENCES series(series_id),
             rating DECIMAL(10,2),
             comments TEXT
         )""")
-    
+
     cursor.execute("""
         CREATE TABLE casting (
             series_id INTEGER REFERENCES series(series_id),
@@ -531,7 +533,17 @@ def createPostgreSQL():
             (17, 'q@gmail.com', 34, 'Megan', 'Morrison'),
             (18, 'r@gmail.com', 35, 'Susan', 'Olsen'),
             (19, 's@gmail.com', 36, 'Geoff', 'Larson'),
-            (20, 't@gmail.com', 37, 'Wayne', 'Ekholm')
+            (20, 't@gmail.com', 37, 'Wayne', 'Ekholm'),
+            (21, '1@gmail.com', 38, 'Joan', 'Mcdavid'),
+            (22, '2@gmail.com', 39, 'Jeffrey', 'Lewis'),
+            (23, '3@gmail.com', 40, 'Tim', 'Shields'),
+            (24, '4@gmail.com', 41, 'Oscar', 'Smith'),
+            (25, '5@gmail.com', 42, 'Hannah', 'Anderson'),
+            (26, '6@gmail.com', 43, 'William', 'Summers'),
+            (27, '7@gmail.com', 44, 'Megan', 'Morrison'),
+            (28, '8@gmail.com', 45, 'Susan', 'Olsen'),
+            (29, '9@gmail.com', 46, 'Geoff', 'Larson'),
+            (30, '10@gmail.com', 47, 'Wayne', 'Ekholm')
         """)
 
     cursor.execute("""
@@ -545,31 +557,11 @@ def createPostgreSQL():
             (7, 'Brazil'),
             (8, 'Colombia'),
             (9, 'Argentina'),
-            (10, 'Canada'),
-            (11, 'United States'),
-            (12, 'El Salvador'),
-            (13, 'United States'),
-            (14, 'Canada'),
-            (15, 'United States'),
-            (16, 'Brazil'),
-            (17, 'Brazil'),
-            (18, 'Argentina'),
-            (19, 'Brazil'),
-            (20, 'United States')
+            (10, 'Canada')
         """)
 
     cursor.execute("""
         INSERT INTO EMEA_users (user_id, region_EMEA) VALUES
-            (1, 'Germany'),
-            (2, 'Italy'),
-            (3, 'Spain'),
-            (4, 'Netherlands'),
-            (5, 'Belgium'),
-            (6, 'Switzerland'),
-            (7, 'Austria'),
-            (8, 'Norway'),
-            (9, 'Denmark'),
-            (10, 'Poland'),
             (11, 'Portugal'),
             (12, 'Greece'),
             (13, 'Turkey'),
@@ -584,26 +576,17 @@ def createPostgreSQL():
 
     cursor.execute("""
         INSERT INTO ASIA_users (user_id, region_ASIA) VALUES
-            (1, 'China'),
-            (2, 'India'),
-            (3, 'Japan'),
-            (4, 'South Korea'),
-            (5, 'Indonesia'),
-            (6, 'Malaysia'),
-            (7, 'Thailand'),
-            (8, 'Vietnam'),
-            (9, 'Philippines'),
-            (10, 'Singapore'),
-            (11, 'Pakistan'),
-            (12, 'Bangladesh'),
-            (13, 'Sri Lanka'),
-            (14, 'Nepal'),
-            (15, 'Myanmar'),
-            (16, 'Colombia'),
-            (17, 'Laos'),
-            (18, 'Mongolia'),
-            (19, 'Kazakhstan'),
-            (20, 'Uzbekistan')
+            (20, 'Singapore'),
+            (21, 'Pakistan'),
+            (22, 'Bangladesh'),
+            (23, 'Sri Lanka'),
+            (24, 'Nepal'),
+            (25, 'Myanmar'),
+            (26, 'Colombia'),
+            (27, 'Laos'),
+            (28, 'Mongolia'),
+            (29, 'Kazakhstan'),
+            (30, 'Uzbekistan')
         """)
 
     cursor.execute("""
@@ -627,7 +610,17 @@ def createPostgreSQL():
             (17, TRUE),
             (18, TRUE),
             (19, FALSE),
-            (20, FALSE)
+            (20, FALSE),
+            (21, TRUE),
+            (22, FALSE),
+            (23, FALSE),
+            (24, TRUE),
+            (25, FALSE),
+            (26, TRUE),
+            (27, TRUE),
+            (28, TRUE),
+            (29, FALSE),
+            (30, FALSE)
 
         """)
 
@@ -652,7 +645,17 @@ def createPostgreSQL():
             (17, 'Action', 'Documentary'),
             (18, 'Cartoon', 'Documentary'),
             (19, 'Action', 'Horror'),
-            (20, 'Action', 'Horror')
+            (20, 'Action', 'Horror'),
+            (21, 'Action', 'Drama'),
+            (22, 'Action', 'Documentary'),
+            (23, 'Drama', 'Thriller'),
+            (24, 'Horror', 'Thriller'),
+            (25, 'Thriller', 'Action'),
+            (26, 'Horror', 'Drama'),
+            (27, 'Thriller', 'Cartoon'),
+            (28, 'Horror', 'Action'),
+            (29, 'Drama', 'Thriller'),
+            (30, 'Action', 'Drama')
         """)
     print("Populated tables in user_db")
     print("#############################################")
@@ -703,7 +706,7 @@ def createPostgreSQL():
             user_id INTEGER,
             created DATE,
             watchtime INTEGER,
-            subcribed_for INTEGER,
+            subscribed_for INTEGER,
             last_login DATE
         )""")
     print("Created tables in metadata_db")
@@ -731,9 +734,19 @@ def createPostgreSQL():
             (17, '{"2021-01-18","2021-01-02","2021-01-02"}'),
             (18, '{"2021-01-19"}'),
             (19, '{"2021-01-20"}'),
-            (20, '{"2021-01-21","2021-01-02"}')
+            (20, '{"2021-01-21","2021-01-02"}'),
+            (21, '{"2021-01-21"}'),
+            (22, '{"2021-02-21"}'),
+            (23, '{"2021-03-21"}'),
+            (24, '{"2021-04-21"}'),
+            (25, '{"2021-05-21"}'),
+            (26, '{"2021-06-21"}'),
+            (27, '{"2021-07-21"}'),
+            (28, '{"2021-08-21"}'),
+            (29, '{"2021-09-21"}'),
+            (30, '{"2021-10-21"}')
         """)
-    
+
     cursor.execute("""
         INSERT INTO movie_history (user_id, movie_id) VALUES
             (1, '{1}'),
@@ -755,7 +768,17 @@ def createPostgreSQL():
             (17, '{18, 2, 2}'),
             (18, '{19}'),
             (19, '{20}'),
-            (20, '{21, 2}')
+            (20, '{21, 2}'),
+            (21, '{12, 2}'),
+            (22, '{13}'),
+            (23, '{14}'),
+            (24, '{15}'),
+            (25, '{16}'),
+            (26, '{17}'),
+            (27, '{18, 2, 2}'),
+            (28, '{19}'),
+            (29, '{20}'),
+            (30, '{21, 2}')
         """)
 
     cursor.execute("""
@@ -779,7 +802,17 @@ def createPostgreSQL():
             (17, '{1, 2, 3}'),
             (18, '{19}'),
             (19, '{20}'),
-            (20, '{21, 2}')
+            (20, '{21, 2}'),
+            (21, '{1}'),
+            (22, '{2, 3}'),
+            (23, '{3, 4}'),
+            (24, '{5, 2}'),
+            (25, '{6}'),
+            (26, '{7}'),
+            (27, '{8, 2}'),
+            (28, '{6}'),
+            (29, '{10}'),
+            (30, '{11}')
         """)
 
     cursor.execute("""
@@ -803,11 +836,21 @@ def createPostgreSQL():
             (17, '{"action movie", "documentary series"}'),
             (18, '{"cartoon movie", "documentary series"}'),
             (19, '{"action movie", "horror series"}'),
-            (20, '{"action movie", "horror series"}')
+            (20, '{"action movie", "horror series"}'),
+            (21, '{"horror movie", "drama series"}'),
+            (22, '{"thriller movie", "cartoon series"}'),
+            (23, '{"horror movie", "action series"}'),
+            (24, '{"drama movie", "thriller series"}'),
+            (25, '{"action movie", "drama series"}'),
+            (26, '{"drama movie", "cartoon series"}'),
+            (27, '{"action movie", "documentary series"}'),
+            (28, '{"cartoon movie", "documentary series"}'),
+            (29, '{"action movie", "horror series"}'),
+            (30, '{"action movie", "horror series"}')
         """)
 
     cursor.execute("""
-        INSERT INTO user_meta (user_id, created, watchtime, subcribed_for, last_login) VALUES
+        INSERT INTO user_meta (user_id, created, watchtime, subscribed_for, last_login) VALUES
             (1, '2021-01-01', 120, 1, '2021-01-01'),
             (2, '2021-01-02', 130, 2, '2021-01-02'),
             (3, '2021-01-03', 140, 3, '2021-01-03'),
@@ -827,7 +870,17 @@ def createPostgreSQL():
             (17, '2021-01-17', 280, 17, '2021-01-17'),
             (18, '2021-01-18', 290, 18, '2021-01-18'),
             (19, '2021-01-19', 300, 19, '2021-01-19'),
-            (20, '2021-01-20', 310, 20, '2021-01-20')
+            (20, '2021-01-20', 310, 20, '2021-01-20'),
+            (21, '2021-01-11', 220, 11, '2021-01-11'),
+            (22, '2021-01-12', 230, 12, '2021-01-12'),
+            (23, '2021-01-13', 240, 13, '2021-01-13'),
+            (24, '2021-01-14', 250, 14, '2021-01-14'),
+            (25, '2021-01-15', 260, 15, '2021-01-15'),
+            (26, '2021-01-16', 270, 16, '2021-01-16'),
+            (27, '2021-01-17', 280, 17, '2021-01-17'),
+            (28, '2021-01-18', 290, 18, '2021-01-18'),
+            (29, '2021-01-19', 300, 19, '2021-01-19'),
+            (30, '2021-01-20', 310, 20, '2021-01-20')
         """)
     print("Populated tables in metadata_db")
     print("#############################################")
