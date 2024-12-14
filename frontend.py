@@ -3,6 +3,7 @@ Frontend application for managing local PostgreSQL databases of an on-demand med
 """
 
 import psycopg2
+from psycopg2.errors import UniqueViolation
 
 
 class DatabaseHandler:
@@ -59,36 +60,46 @@ class DatabaseHandler:
         )
         self.advertisement_cur = self.advertisement_db_conn.cursor()
 
-    def add_user(self, user_id, email, age, first_name, last_name, subscription_status, main_genre, secondary_genre, region):
-        self.usercur.execute("""
-                         INSERT INTO users (user_id, email, age, first_name, last_name)
-                         VALUES (?, ?, ?, ?, ?)""", (user_id, email, age, first_name, last_name))
-        
-        self.usercur.execute("""
+    def add_user(self, user_id, email, age, first_name, last_name, subscription_status, main_genre, secondary_genre, region, country):
+        """
+        Adds a new user including their personal information, subscription status, preferences, and country.
+        """
+        if region.casefold() not in ["americas", "emea", "asia"]:
+            print(f"Error processing region, {region} is not one of 'Americas', 'Emea', or 'Asia'.")
+            return
+
+        try:
+            self.user_cur.execute(f"""
+                            INSERT INTO users (user_id, email, age, first_name, last_name)
+                            VALUES ('{user_id}', '{email}', '{age}', '{first_name}', '{last_name}');""")
+        except UniqueViolation:
+            print(f"Error, an user already exists with this id: {user_id}.")
+            return
+
+        self.user_cur.execute(f"""
                          INSERT INTO subscribers (user_id, subscription_status)
-                         VALUES (?, ?)""", (user_id, subscription_status))
-        self.usercur.execute("""
+                         VALUES ('{user_id}', {subscription_status});""")
+
+        self.user_cur.execute(f"""
                          INSERT INTO user_preferences (user_id, main_genre, secondary_genre)
-                         VALUES (?, ?, ?)""", (user_id, main_genre, secondary_genre))
-        if region == 'AMERICAS':
-            self.usercur.execute("""
+                         VALUES ('{user_id}', '{main_genre}', '{secondary_genre}');""")
+
+        if region.casefold() == 'americas':
+            self.user_cur.execute(f"""
                              INSERT INTO AMERICAS_users (user_id, region_AMERICAS)
-                             VALUES (?, ?)
-                             """, (user_id, region))
-        elif region == 'EMEA':
-            self.usercur.execute("""
+                             VALUES ('{user_id}', '{country}');""")
+        elif region.casefold() == 'emea':
+            self.user_cur.execute(f"""
                              INSERT INTO EMEA_users (user_id, region_EMEA)
-                             VALUES (?, ?)
-                             """, (user_id, region))
-        elif region == 'ASIA':
-            self.usercur.execute("""
+                             VALUES ('{user_id}', '{country}');""")
+        elif region.casefold() == 'asia':
+            self.user_cur.execute(f"""
                              INSERT INTO ASIA_users (user_id, region_ASIA)
-                             VALUES (?, ?)
-                             """, (user_id, region))
+                             VALUES ('{user_id}', '{country}');""")
 
         self.user_db_conn.commit()
 
-        print(f"User {first_name} {last_name} added successfully!")
+        print(f"User {first_name} {last_name} was added successfully!")
 
 
     def find_all_movies_in_country(self, country):
@@ -429,6 +440,7 @@ def media_menu():
 def user_menu():
     print("\n---------------- USER MENU ----------------")
     print("\n1) Show all relevant user information")
+    print("2) Add new user")
     print("0) Go back")
     print("--------------------------------------------")
 
@@ -520,6 +532,18 @@ def main():
                             break
                         case "1":
                             database_handler.find_all_user_information()
+                        case "2":
+                            user_id = input("Enter the id for the new user: ")
+                            email = input("Enter the email for the new user: ")
+                            age = input("Enter the age for the new user: ")
+                            first_name = input("Enter the firstname for the new user: ")
+                            last_name = input("Enter the lastname for the new user: ")
+                            subscription_status = False
+                            main_genre = input("Enter the main genre for the new user: ")
+                            secondary_genre = input("Enter the secondary genre for the new user: ")
+                            region = input("Enter the region for the new user (Americas, Emea or Asia): ")
+                            country = input("Enter the country for the new user: ")
+                            database_handler.add_user(user_id, email, age, first_name, last_name, subscription_status, main_genre, secondary_genre, region, country)
                         case _:
                             print("Erronous input, try again!")
 
