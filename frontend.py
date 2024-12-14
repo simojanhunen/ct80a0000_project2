@@ -59,6 +59,38 @@ class DatabaseHandler:
         )
         self.advertisement_cur = self.advertisement_db_conn.cursor()
 
+    def add_user(self, user_id, email, age, first_name, last_name, subscription_status, main_genre, secondary_genre, region):
+        self.usercur.execute("""
+                         INSERT INTO users (user_id, email, age, first_name, last_name)
+                         VALUES (?, ?, ?, ?, ?)""", (user_id, email, age, first_name, last_name))
+        
+        self.usercur.execute("""
+                         INSERT INTO subscribers (user_id, subscription_status)
+                         VALUES (?, ?)""", (user_id, subscription_status))
+        self.usercur.execute("""
+                         INSERT INTO user_preferences (user_id, main_genre, secondary_genre)
+                         VALUES (?, ?, ?)""", (user_id, main_genre, secondary_genre))
+        if region == 'AMERICAS':
+            self.usercur.execute("""
+                             INSERT INTO AMERICAS_users (user_id, region_AMERICAS)
+                             VALUES (?, ?)
+                             """, (user_id, region))
+        elif region == 'EMEA':
+            self.usercur.execute("""
+                             INSERT INTO EMEA_users (user_id, region_EMEA)
+                             VALUES (?, ?)
+                             """, (user_id, region))
+        elif region == 'ASIA':
+            self.usercur.execute("""
+                             INSERT INTO ASIA_users (user_id, region_ASIA)
+                             VALUES (?, ?)
+                             """, (user_id, region))
+
+        self.user_db_conn.commit()
+
+        print(f"User {first_name} {last_name} added successfully!")
+
+
     def find_all_movies_in_country(self, country):
         """
         Finds all available movies in a given country
